@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+</style>
+</head>
+<body>
+<canvas id="mycanvas" width="800" height="600"></canvas>
+<script>
+var canvas;
+var canvasContext;
+var dimX=50;
+var speedX=10;
+var dimY=50;
+var speedY=5;
+var paddle1Y=250;
+var paddle2Y=250;
+const padd_height=100;
+var p1score=0;
+var p2score=0;
+
+function calculateMousePos(evt){
+var rect=canvas.getBoundingClientRect();
+var root= document.documentElement;
+var mouseX=evt.clientX-rect.left-root.scrollLeft;
+var mouseY=evt.clientY-rect.top-root.scrollTop;
+return{
+x:mouseX,
+y:mouseY
+};
+}
+
+window.onload=function(){
+canvas=document.getElementById('mycanvas');
+canvasContext=canvas.getContext('2d');
+setInterval(function(){
+motion();
+draw();},20);
+
+canvas.addEventListener('mousemove',function(evt){
+var mousePos=calculateMousePos(evt);
+paddle1Y=mousePos.y-(padd_height/2);});
+}
+
+function Ballreset(){
+dimX=canvas.width/2;
+dimY=canvas.height/2;
+}
+
+function computermove(){
+var padd2center= paddle2Y+(padd_height/20);
+if(padd2center<(dimY-35)){paddle2Y += 5;}
+else{paddle2Y -= 5;}
+}
+
+function motion(){
+
+computermove();
+
+dimX=dimX+speedX;
+if(dimX>=canvas.width){
+if(dimY>paddle2Y && dimY<(paddle2Y+padd_height)){speedX=-speedX;}
+else{Ballreset();
+p1score++;}
+}
+if(dimX<0){
+if(dimY>paddle1Y && dimY<(paddle1Y+padd_height)){speedX=-speedX;}
+else{Ballreset();
+p2score++;}
+}
+
+dimY=dimY+speedY;
+if(dimY>=canvas.height){speedY=-speedY;}
+if(dimY<0){speedY=-speedY;}
+
+}
+
+function draw(){
+colorrect(0,0,canvas.width,canvas.height,'black');
+colorrect(0,paddle1Y,10,padd_height,'white');
+colorrect(790,paddle2Y,10,padd_height,'white');
+
+canvasContext.fillStyle= 'white';
+canvasContext.beginPath();
+canvasContext.arc(dimX,dimY,10,0,Math.PI*2,true);
+canvasContext.fill();
+
+function colorrect(X,Y,width,height,drawcolor){
+canvasContext.fillStyle=drawcolor;
+canvasContext.fillRect(X,Y,width,height);
+}
+
+canvasContext.fillText(p1score,100,100);
+canvasContext.fillText(p2score,canvas.width-100,100);
+}
+
+</script>
+</body>
+
+</html>
